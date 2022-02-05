@@ -1,0 +1,16 @@
+{
+    "authors": [
+        {
+            "name": "LiveviL"
+        }
+    ],
+    "name": "azuriom/rcon",
+    "type": "azuriom-plugin",
+    "description": "RCON Plugin for Azuriom",
+    "version": "0.2.0",
+    "autoload": {
+        "psr-4": {
+            "Azuriom\\Plugin\\Rcon\\": "src/"
+        }
+    }
+}

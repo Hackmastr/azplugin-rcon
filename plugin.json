@@ -1,0 +1,14 @@
+{
+    "id": "rcon",
+    "name": "Rcon",
+    "description": "Plugin for Azuriom",
+    "version": "0.1.2",
+    "url": "",
+    "authors": [
+        "LiveviL (LiveviL#5042)"
+    ],
+    "providers": [
+        "\\Azuriom\\Plugin\\Rcon\\Providers\\RconServiceProvider",
+        "\\Azuriom\\Plugin\\Rcon\\Providers\\RouteServiceProvider"
+    ]
+}
