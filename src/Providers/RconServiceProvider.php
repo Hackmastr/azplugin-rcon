@@ -12,7 +12,7 @@ class RconServiceProvider extends BasePluginServiceProvider
      *
      * @var array
      */
-    protected $middleware = [
+    protected array $middleware = [
         // \Azuriom\Plugin\Rcon\Middleware\ExampleMiddleware::class,
     ];
 
@@ -21,14 +21,14 @@ class RconServiceProvider extends BasePluginServiceProvider
      *
      * @var array
      */
-    protected $middlewareGroups = [];
+    protected array $middlewareGroups = [];
 
     /**
      * The plugin's route middleware.
      *
      * @var array
      */
-    protected $routeMiddleware = [
+    protected array $routeMiddleware = [
         // 'example' => \Azuriom\Plugin\Rcon\Middleware\ExampleRouteMiddleware::class,
     ];
 
@@ -37,7 +37,7 @@ class RconServiceProvider extends BasePluginServiceProvider
      *
      * @var array
      */
-    protected $policies = [
+    protected array $policies = [
         // User::class => UserPolicy::class,
     ];
 
@@ -46,7 +46,7 @@ class RconServiceProvider extends BasePluginServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->registerMiddlewares();
 
@@ -58,7 +58,7 @@ class RconServiceProvider extends BasePluginServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         // $this->registerPolicies();
 
@@ -76,15 +76,13 @@ class RconServiceProvider extends BasePluginServiceProvider
 
     /**
      * Return the admin navigations routes to register in the dashboard.
-     *
-     * @return array
      */
-    protected function adminNavigation()
+    protected function adminNavigation(): array
     {
         return [
             'rcon' => [
-                'name' => 'rcon::admin.title', // Translation of the tab name
-                'icon' => 'fas fa-gamepad', // FontAwesome icon
+                'name' => trans('rcon::admin.title'), // Translation of the tab name
+                'icon' => 'bi bi-controller', // FontAwesome icon
                 'route' => 'rcon.admin.index', // Page's route
                 'permission' => 'rcon.rcon', // (Optional) Permission required to view this page
             ],

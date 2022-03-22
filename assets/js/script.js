@@ -1,16 +1,33 @@
-class RconPlugin {
-    init () {
-        this.isExecuting = false;
-        this.input = $('#cmd-value');
-        this.btn = $('#run-command');
-        this.cont = $('#response');
+"use strict";
 
-        this.input.on('keypress', (e) => {
-           if (e.which === 13)
-               this.send();
+class RconPlugin {
+    init (store) {
+        this.store = store;
+        this.isExecuting = false;
+        this.input = document.getElementById('cmd-value');
+        this.btn = document.getElementById('run-command');
+        this.cont = document.getElementById('response');
+
+        this.input.addEventListener('keydown', e => {
+            if (e.code === 'Enter')
+            {
+                this.store.put(this.input.value);
+                return this.send();
+            }
+
+            if (e.code === 'ArrowUp')
+            {
+                return this.readAndSetHistory();
+            }
+
+            // if (e.code === 'ArrowDown') -- For the future!™
+            // {
+            //     return this.readAndSetHistory(true);
+            // }
         });
 
-        this.btn.on('click', () => {
+        this.btn.addEventListener('click', () => {
+            this.store.put(this.input.value);
             this.send();
         });
     }
@@ -20,41 +37,38 @@ class RconPlugin {
             return;
 
         this.setExecuting();
-        this.toggleState(false);
+        this.toggleState();
 
-        const serverId = $('#server-id').val();
+        const serverId = document.getElementById('server-id').value;
         axios.post(RconPluginEndpoint + serverId, {
-            'cmd': this.input.val()
+            'cmd': this.input.value
         }).then(r => this.process(r))
             .catch(r => this.fail(r))
             .finally(() => {
-               this.toggleState(false);
+               this.toggleState();
                this.setDone();
-               this.input.val('');
-               this.cont.scrollTop(this.cont[0].clientHeight);
+               this.input.value = '';
+               this.cont.scrollTop = this.cont.scrollHeight;
+               this.input.focus();
             });
     }
 
     process (response) {
-        this.cont.append(`<span class='text-success'>→ <b>${this.input.val()}</b></span> ↴<br/>`);
-        this.cont.append(`${response.data}<br/>`);
+        this.cont.innerHTML += `<span class='text-success'>→ <b>${this.input.value}</b></span> ↴<br/>`;
+        this.cont.innerHTML += `${response.data}<br/>`;
     }
 
     fail(err) {
-        this.cont.append(`<span class='text-warning'>→ <b>${this.input.val()}</b></span> ↴<br/>`);
-        this.cont.append(`${err.response.data.error}<br/>`);
+        this.cont.innerHTML += `<span class='text-warning'>→ <b>${this.input.value}</b></span> ↴<br/>`;
+        this.cont.innerHTML += `${err.response.data.error}<br/>`;
     }
 
     /**
      * Toggle disabled for input and button.
-     * @param {boolean} disabled
      */
-    toggleState(disabled) {
-        if (typeof disabled === 'undefined')
-            disabled = false;
-
-        this.btn.attr('disabled', disabled);
-        this.input.attr('disabled', disabled);
+    toggleState() {
+        this.btn.toggleAttribute('disabled');
+        this.input.toggleAttribute('disabled');
     }
 
     setExecuting () {
@@ -64,9 +78,54 @@ class RconPlugin {
     setDone () {
         this.isExecuting = false;
     }
+
+    readAndSetHistory(reverse) {
+        // if (typeof reverse === 'undefined')
+        //     reverse = false;
+        this.input.value = this.store.get();
+    }
 }
 
+// Snippet from: https://stackoverflow.com/users/674374/mithun-satheesh
+const store = {
+    keyCount: 0,
+    commandCount: 0,
+    prevCommand: [],
+
+
+    put : function(val) {
+        this.commandCount++;
+        this.keyCount = this.commandCount;
+        this.prevCommand.push(val);
+    },
+
+    get : function() {
+        this.keyCount--;
+        if(typeof this.prevCommand[this.keyCount] !== "undefined") {
+            return this.prevCommand[this.keyCount];
+        }
+        return '';
+    }
+}
 
 window.addEventListener('load', () => {
-    new RconPlugin().init();
+    new RconPlugin().init(store);
 });
+
+// https://developer.mozilla.org/en-US/docs/web/api/element/toggleattribute
+if (!Element.prototype.toggleAttribute) {
+    Element.prototype.toggleAttribute = function(name, force) {
+        if(force !== void 0) force = !!force
+
+        if (this.hasAttribute(name)) {
+            if (force) return true;
+
+            this.removeAttribute(name);
+            return false;
+        }
+        if (force === false) return false;
+
+        this.setAttribute(name, "");
+        return true;
+    };
+}

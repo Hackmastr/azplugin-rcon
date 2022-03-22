@@ -12,14 +12,14 @@ class RouteServiceProvider extends BaseRouteServiceProvider
      *
      * @var string
      */
-    protected $namespace = 'Azuriom\Plugin\Rcon\Controllers';
+    protected string $namespace = 'Azuriom\Plugin\Rcon\Controllers';
 
     /**
      * Define the routes for the application.
      *
      * @return void
      */
-    public function loadRoutes()
+    public function loadRoutes(): void
     {
         Route::prefix('admin/'.$this->plugin->id)
             ->middleware('admin-access')
